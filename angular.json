@@ -122,7 +122,50 @@
           }
         }
       }
+    },
+    "ng-story": {
+      "projectType": "library",
+      "root": "projects/ng-story",
+      "sourceRoot": "projects/ng-story/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/ng-story/tsconfig.lib.json",
+            "project": "projects/ng-story/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ng-story/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ng-story/src/test.ts",
+            "tsConfig": "projects/ng-story/tsconfig.spec.json",
+            "karmaConfig": "projects/ng-story/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/ng-story/tsconfig.lib.json",
+              "projects/ng-story/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
-  "defaultProject": "story"
+  "defaultProject": "story",
+  "cli": {
+    "analytics": "e376bba1-1658-4a9b-adf3-2ca029ebda21"
+  }
 }
