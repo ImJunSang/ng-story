@@ -1,10 +1,20 @@
-import { AfterContentInit, ContentChildren, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, Output, QueryList, Renderer2 } from '@angular/core';
+import {
+    AfterContentInit,
+    ContentChildren,
+    Directive,
+    ElementRef,
+    HostBinding,
+    HostListener,
+    Input,
+    OnDestroy,
+    QueryList,
+    Renderer2 } from '@angular/core';
 import { JunivorySlideDirective } from './junivory-slide.directive';
 
 @Directive({
     selector: '[junivorySlideWrapper]'
 })
-export class JunivorySlideWrapperDirective implements AfterContentInit {
+export class JunivorySlideWrapperDirective implements AfterContentInit, OnDestroy {
     @Input() debounce = 500;
     @ContentChildren(JunivorySlideDirective, {read: ElementRef}) slides?: QueryList<ElementRef<HTMLElement>>;
 
@@ -12,8 +22,15 @@ export class JunivorySlideWrapperDirective implements AfterContentInit {
 
     private selected = 0;
     private debouncing: any;
-
-    private touchStart?: number;
+    private nextSlide?: HTMLElement;
+    private scrollTimer: any;
+    private io: IntersectionObserver = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+                this.nextSlide = entry.target as HTMLElement;
+            }
+        })
+    }, {threshold: [0.5]});;
 
     get slidesArray(): Array<ElementRef<HTMLElement>> {
         if (!this.slides) {
@@ -22,13 +39,17 @@ export class JunivorySlideWrapperDirective implements AfterContentInit {
         return this.slides?.toArray();
     }
 
-    constructor(private renderer: Renderer2, private elementRef: ElementRef<HTMLElement>) { }
+    constructor(private renderer: Renderer2) { }
 
+    ngOnDestroy() {
+        this.io.disconnect();
+    }
 
     ngAfterContentInit() {
         this.slides?.forEach(slide => {
             this.renderer.setStyle(slide.nativeElement, 'width', '100%');
             this.renderer.setStyle(slide.nativeElement, 'height', '100vh');
+            this.io.observe(slide.nativeElement);
         })
     }
 
@@ -45,34 +66,21 @@ export class JunivorySlideWrapperDirective implements AfterContentInit {
         }
     }
 
-    @HostListener('touchstart', ['$event'])
-    onTouchStart(e: TouchEvent) {
-        this.touchStart = e.changedTouches[0].clientY;
+    @HostListener('window:scroll', ['$event'])
+    onScroll(e: Event): void {
+        if (this.scrollTimer) {
+            clearTimeout(this.scrollTimer)
+        }
+        this.scrollTimer = setTimeout(() => {
+            this.onScrollEnd();
+        }, 50);
     }
 
-    @HostListener('touchmove', ['$event'])
-    onTouchMove(e: TouchEvent) {
-        e.preventDefault();
-        if (this.debounceTime() || !this.touchStart) {
+    onScrollEnd(): void {
+        if (!this.nextSlide) {
             return;
         }
-        if (e.changedTouches[0].clientY < this.touchStart) {
-            this.touchStart = undefined;
-            this.nextPage();
-        } else if (e.changedTouches[0].clientY > this.touchStart) {
-            this.touchStart = undefined;
-            this.prevPage();
-        }
-    }
-
-    @HostListener('touchend', ['$event'])
-    onTouchEnd(e: TouchEvent) {
-        e.preventDefault();
-    }
-
-    @HostListener('touchcancel', ['$event'])
-    onTouchCancel(e: TouchEvent) {
-        e.preventDefault();
+        this.nextSlide.scrollIntoView({behavior: 'smooth'});
     }
 
     private nextPage() {
