@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { NgStoryModule } from 'ng-story';
+import { JunivorySlideModule } from 'junivory-slide';
 
 @NgModule({
   declarations: [
@@ -13,7 +13,7 @@ import { NgStoryModule } from 'ng-story';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgStoryModule
+    JunivorySlideModule
   ],
   providers: [],
   bootstrap: [AppComponent]

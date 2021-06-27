@@ -123,38 +123,38 @@
         }
       }
     },
-    "ng-story": {
+    "junivory-slide": {
       "projectType": "library",
-      "root": "projects/ng-story",
-      "sourceRoot": "projects/ng-story/src",
+      "root": "projects/junivory-slide",
+      "sourceRoot": "projects/junivory-slide/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "tsConfig": "projects/ng-story/tsconfig.lib.json",
-            "project": "projects/ng-story/ng-package.json"
+            "tsConfig": "projects/junivory-slide/tsconfig.lib.json",
+            "project": "projects/junivory-slide/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "projects/ng-story/tsconfig.lib.prod.json"
+              "tsConfig": "projects/junivory-slide/tsconfig.lib.prod.json"
             }
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/ng-story/src/test.ts",
-            "tsConfig": "projects/ng-story/tsconfig.spec.json",
-            "karmaConfig": "projects/ng-story/karma.conf.js"
+            "main": "projects/junivory-slide/src/test.ts",
+            "tsConfig": "projects/junivory-slide/tsconfig.spec.json",
+            "karmaConfig": "projects/junivory-slide/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/ng-story/tsconfig.lib.json",
-              "projects/ng-story/tsconfig.spec.json"
+              "projects/junivory-slide/tsconfig.lib.json",
+              "projects/junivory-slide/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"

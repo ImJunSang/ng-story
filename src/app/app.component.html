@@ -1,4 +1,5 @@
-<lib-ng-story> </lib-ng-story>
-
-<h2 libNgStory bgColor='red' (clicked)="onClicked($event)"
-    style="display: inline; cursor: pointer;"> Click me </h2>
+<div junivorySlideWrapper>
+    <div junivorySlide *ngFor="let item of testList" [style.background-color]="item">
+        {{item}}
+    </div>
+</div>

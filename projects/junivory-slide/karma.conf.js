@@ -25,7 +25,7 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, '../../coverage/ng-story'),
+      dir: require('path').join(__dirname, '../../coverage/junivory-slide'),
       subdir: '.',
       reporters: [
         { type: 'html' },

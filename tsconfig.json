@@ -20,9 +20,9 @@
       "dom"
     ],
     "paths": {
-      "ng-story": [
-        "dist/ng-story/ng-story",
-        "dist/ng-story"
+      "junivory-slide": [
+        "dist/junivory-slide/junivory-slide",
+        "dist/junivory-slide"
       ]
     }
   },

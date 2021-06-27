@@ -7,8 +7,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
     title = 'story';
+    testList = ['pink', 'skyblue', 'yellow', 'white', 'green'];
 
-    onClicked(event: any) {
-      console.log(event);
+    constructor() {
+
     }
 }
