@@ -1,5 +1,12 @@
-<div junivorySlideWrapper>
+<div junivorySlideWrapper #Wrapper="slideWrapper">
     <div junivorySlide *ngFor="let item of testList" [style.background-color]="item">
-        {{item}}
+        <div class="d-flex flex-column justify-content-center h-100">
+            <button mat-icon-button (click)="prevPage()">
+                <mat-icon>north</mat-icon>
+            </button>
+            <button  mat-icon-button (click)="nextPage()">
+                <mat-icon>south</mat-icon>
+            </button>
+        </div>
     </div>
 </div>

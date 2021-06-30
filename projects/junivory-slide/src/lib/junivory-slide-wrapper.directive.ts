@@ -9,14 +9,28 @@ import {
     OnDestroy,
     QueryList,
     Renderer2 } from '@angular/core';
-import { JunivorySlideDirective } from './junivory-slide.directive';
+import { Subscription } from 'rxjs';
+import { delay } from 'rxjs/operators';
+import { JunivorySlide } from './junivory-slide.directive';
+
+export interface SlideWrapperConfig {
+    debounce: number, // Debounce time in ms
+    direction: 'vertical' | 'horizontal', // Paging direction
+    scroll: 'on' | 'off', // Whether use scroll event
+    order?: number[], // Custom paging order
+}
 
 @Directive({
-    selector: '[junivorySlideWrapper]'
+    selector: '[junivorySlideWrapper]',
+    exportAs:'slideWrapper'
 })
-export class JunivorySlideWrapperDirective implements AfterContentInit, OnDestroy {
-    @Input() debounce = 500;
-    @ContentChildren(JunivorySlideDirective, {read: ElementRef}) slides?: QueryList<ElementRef<HTMLElement>>;
+export class JunivorySlideWrapper implements AfterContentInit, OnDestroy {
+    @Input() config: SlideWrapperConfig = {
+        debounce: 500,
+        direction: 'vertical',
+        scroll: 'on',
+    };
+    @ContentChildren(JunivorySlide, {read: ElementRef}) slides?: QueryList<ElementRef<HTMLElement>>;
 
     @HostBinding('style.width') public wrapperWidth = '100%';
 
@@ -24,6 +38,7 @@ export class JunivorySlideWrapperDirective implements AfterContentInit, OnDestro
     private debouncing: any;
     private nextSlide?: HTMLElement;
     private scrollTimer: any;
+    private slidesChangeSubscription?: Subscription;
     private io: IntersectionObserver = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
         entries.forEach(entry => {
             if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
@@ -39,10 +54,14 @@ export class JunivorySlideWrapperDirective implements AfterContentInit, OnDestro
         return this.slides?.toArray();
     }
 
-    constructor(private renderer: Renderer2) { }
+    constructor(private renderer: Renderer2) {
+    }
 
     ngOnDestroy() {
         this.io.disconnect();
+        if (this.slidesChangeSubscription) {
+            this.slidesChangeSubscription.unsubscribe();
+        }
     }
 
     ngAfterContentInit() {
@@ -51,10 +70,29 @@ export class JunivorySlideWrapperDirective implements AfterContentInit, OnDestro
             this.renderer.setStyle(slide.nativeElement, 'height', '100vh');
             this.io.observe(slide.nativeElement);
         })
+        this.slidesChangeSubscription = this.slides?.changes.pipe(delay(0)).subscribe(() => {
+            this.slides?.forEach(slide => {
+                this.renderer.setStyle(slide.nativeElement, 'width', '100%');
+                this.renderer.setStyle(slide.nativeElement, 'height', '100vh');
+                this.io.observe(slide.nativeElement);
+            })
+        })
+    }
+
+    goTo(index: number) {
+
+    }
+
+    goNext() {
+        this.nextPage();
+    }
+
+    goPrev() {
+        this.prevPage();
     }
 
     @HostListener('mousewheel', ['$event'])
-    onWheel(e: WheelEvent): void {
+    _onWheel(e: WheelEvent): void {
         e.preventDefault();
         if (this.debounceTime()) {
             return;
@@ -66,29 +104,45 @@ export class JunivorySlideWrapperDirective implements AfterContentInit, OnDestro
         }
     }
 
-    @HostListener('window:scroll', ['$event'])
-    onScroll(e: Event): void {
+    @HostListener('window:resize', ['$event'])
+    _onResize(e: Event): void {
         if (this.scrollTimer) {
             clearTimeout(this.scrollTimer)
         }
         this.scrollTimer = setTimeout(() => {
-            this.onScrollEnd();
+            this.currentPage();
         }, 50);
     }
 
-    onScrollEnd(): void {
+    @HostListener('window:scroll', ['$event'])
+    _onScroll(e: Event): void {
+        if (this.scrollTimer) {
+            clearTimeout(this.scrollTimer)
+        }
+        this.scrollTimer = setTimeout(() => {
+            this._onScrollEnd();
+        }, 50);
+    }
+
+    _onScrollEnd(): void {
         if (!this.nextSlide) {
             return;
         }
         this.nextSlide.scrollIntoView({behavior: 'smooth'});
     }
 
+    private currentPage() {
+        const index = this.config.order ? this.config.order[this.selected] : this.selected;
+        this.slidesArray[index].nativeElement.scrollIntoView({behavior: 'smooth'});
+    }
+
     private nextPage() {
-        if (!this.slidesArray[this.selected + 1]) {
+        if (this.selected + 1 >= this.slidesArray.length) {
             return;
         }
         this.selected += 1;
-        this.slidesArray[this.selected].nativeElement.scrollIntoView({behavior: 'smooth'});
+        const nextIndex = this.config.order ? this.config.order[this.selected] : this.selected;
+        this.slidesArray[nextIndex].nativeElement.scrollIntoView({behavior: 'smooth'});
     }
 
     private prevPage() {
@@ -96,7 +150,8 @@ export class JunivorySlideWrapperDirective implements AfterContentInit, OnDestro
             return;
         }
         this.selected -= 1;
-        this.slidesArray[this.selected].nativeElement.scrollIntoView({behavior: 'smooth'});
+        const prevIndex = this.config.order ? this.config.order[this.selected] : this.selected;
+        this.slidesArray[prevIndex].nativeElement.scrollIntoView({behavior: 'smooth'});
     }
 
     private debounceTime(): boolean {
@@ -105,7 +160,7 @@ export class JunivorySlideWrapperDirective implements AfterContentInit, OnDestro
         } else {
             this.debouncing = setTimeout(() => {
                 this.debouncing = undefined;
-            }, this.debounce)
+            }, this.config.debounce)
             return false;
         }
     }

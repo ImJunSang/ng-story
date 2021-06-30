@@ -1,9 +1,9 @@
-import { AfterContentInit, Directive, Renderer2, TemplateRef } from '@angular/core';
+import { AfterContentInit, Directive, Renderer2 } from '@angular/core';
 
 @Directive({
     selector: '[junivorySlide]'
 })
-export class JunivorySlideDirective implements AfterContentInit {
+export class JunivorySlide implements AfterContentInit {
 
     constructor(private renderer: Renderer2) { }
 

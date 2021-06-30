@@ -1,19 +1,18 @@
 import { NgModule } from '@angular/core';
-import { JunivorySlideWrapperDirective } from './junivory-slide-wrapper.directive';
-import { JunivorySlideDirective } from './junivory-slide.directive';
-
+import { JunivorySlideWrapper } from './junivory-slide-wrapper.directive';
+import { JunivorySlide } from './junivory-slide.directive';
 
 
 @NgModule({
   declarations: [
-    JunivorySlideWrapperDirective,
-    JunivorySlideDirective
+    JunivorySlideWrapper,
+    JunivorySlide
   ],
   imports: [
   ],
   exports: [
-    JunivorySlideWrapperDirective,
-    JunivorySlideDirective
+    JunivorySlideWrapper,
+    JunivorySlide
   ]
 })
 export class JunivorySlideModule { }

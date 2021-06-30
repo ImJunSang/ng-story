@@ -5,6 +5,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { JunivorySlideModule } from 'junivory-slide';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -13,7 +17,11 @@ import { JunivorySlideModule } from 'junivory-slide';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    JunivorySlideModule
+    JunivorySlideModule,
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatIconModule,
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]
