@@ -17,6 +17,7 @@ export interface SlideWrapperConfig {
     debounce: number, // Debounce time in ms
     direction: 'vertical' | 'horizontal', // Paging direction
     scroll: 'on' | 'off', // Whether use scroll event
+    touchThreshold: number; // 0 to 1
     order?: number[], // Custom paging order
 }
 
@@ -29,6 +30,7 @@ export class JunivorySlideWrapper implements AfterContentInit, OnDestroy {
         debounce: 500,
         direction: 'vertical',
         scroll: 'on',
+        touchThreshold: 0.1
     };
     @ContentChildren(JunivorySlide, {read: ElementRef}) slides?: QueryList<ElementRef<HTMLElement>>;
 
@@ -41,11 +43,11 @@ export class JunivorySlideWrapper implements AfterContentInit, OnDestroy {
     private slidesChangeSubscription?: Subscription;
     private io: IntersectionObserver = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+            if (entry.isIntersecting && entry.intersectionRatio > this.config.touchThreshold) {
                 this.nextSlide = entry.target as HTMLElement;
             }
         })
-    }, {threshold: [0.5]});;
+    }, {threshold: [this.config.touchThreshold]});;
 
     get slidesArray(): Array<ElementRef<HTMLElement>> {
         if (!this.slides) {
