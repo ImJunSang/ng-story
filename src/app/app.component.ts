@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { JunivorySlideWrapper } from 'junivory-slide';
+import { JunivorySlideWrapper, SlideWrapperConfig } from 'junivory-slide';
 
 @Component({
     selector: 'app-root',
@@ -8,16 +8,28 @@ import { JunivorySlideWrapper } from 'junivory-slide';
 })
 export class AppComponent {
     title = 'story';
-    testList = ['pink', 'skyblue', 'yellow', 'white', 'green'];
+    listFront = ['pink', 'skyblue'];
+    listEnd = ['white', 'green'];
+    listHorizontal = ['yellow', 'purple', 'orange']
+
+    config: SlideWrapperConfig = {
+        touch: true
+    }
+
+    configHorizontal: SlideWrapperConfig = {
+        direction: 'horizontal',
+        order: [0, 1, 2, 1, 0]
+    }
 
     @ViewChild('Wrapper') wrapper?: JunivorySlideWrapper;
+    @ViewChild('WrapperHorizontal') wrapperHorizontal?: JunivorySlideWrapper;
 
     constructor() {
 
     }
 
-    addPage() {
-        this.testList.push('red');
+    goToPage(index: number) {
+        this.wrapper?.goTo(index);
     }
 
     nextPage() {
@@ -26,6 +38,18 @@ export class AppComponent {
 
     prevPage() {
         this.wrapper?.goPrev();
+    }
+
+    nextPageHorizontal() {
+        if (!this.wrapperHorizontal?.goNext()) {
+            this.wrapper?.goNext();
+        };
+    }
+
+    prevPageHorizontal() {
+        if (!this.wrapperHorizontal?.goPrev()) {
+            this.wrapper?.goPrev();
+        };
     }
 
 }
