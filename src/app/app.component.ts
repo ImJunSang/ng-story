@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { JunivorySlideWrapper } from 'junivory-slide';
+import { JunivorySlideWrapper, SlideWrapperConfig } from 'junivory-slide';
 
 @Component({
     selector: 'app-root',
@@ -10,6 +10,10 @@ export class AppComponent {
     title = 'story';
     testList = ['pink', 'skyblue', 'yellow', 'white', 'green'];
 
+    config: SlideWrapperConfig = {
+        order: [0, 3, 2, 1, 4]
+    }
+
     @ViewChild('Wrapper') wrapper?: JunivorySlideWrapper;
 
     constructor() {
@@ -18,6 +22,10 @@ export class AppComponent {
 
     addPage() {
         this.testList.push('red');
+    }
+
+    goToPage(index: number) {
+        this.wrapper?.goTo(index);
     }
 
     nextPage() {

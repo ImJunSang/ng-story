@@ -7,6 +7,7 @@ import {
     HostListener,
     Input,
     OnDestroy,
+    OnInit,
     QueryList,
     Renderer2 } from '@angular/core';
 import { Subscription } from 'rxjs';
@@ -14,10 +15,10 @@ import { delay } from 'rxjs/operators';
 import { JunivorySlide } from './junivory-slide.directive';
 
 export interface SlideWrapperConfig {
-    debounce: number, // Debounce time in ms
-    direction: 'vertical' | 'horizontal', // Paging direction
-    scroll: 'on' | 'off', // Whether use scroll event
-    touchThreshold: number; // 0 to 1
+    direction?: 'vertical' | 'horizontal', // Paging direction
+    scroll?: 'on' | 'off', // Whether use scroll event
+    touchThreshold?: number; // 0 to 1
+    debounce?: number, // Debounce time in ms
     order?: number[], // Custom paging order
 }
 
@@ -25,14 +26,17 @@ export interface SlideWrapperConfig {
     selector: '[junivorySlideWrapper]',
     exportAs:'slideWrapper'
 })
-export class JunivorySlideWrapper implements AfterContentInit, OnDestroy {
-    @Input() config: SlideWrapperConfig = {
-        debounce: 500,
+export class JunivorySlideWrapper extends JunivorySlide implements AfterContentInit, OnDestroy, OnInit {
+    @Input() config: SlideWrapperConfig = {};
+    @ContentChildren(JunivorySlide, {read: ElementRef}) slides?: QueryList<ElementRef<HTMLElement>>;
+
+    defaultConfig: any = {
         direction: 'vertical',
         scroll: 'on',
-        touchThreshold: 0.1
+        debounce: 500,
+        touchThreshold: 0.1,
+        order: undefined
     };
-    @ContentChildren(JunivorySlide, {read: ElementRef}) slides?: QueryList<ElementRef<HTMLElement>>;
 
     @HostBinding('style.width') public wrapperWidth = '100%';
 
@@ -43,11 +47,11 @@ export class JunivorySlideWrapper implements AfterContentInit, OnDestroy {
     private slidesChangeSubscription?: Subscription;
     private io: IntersectionObserver = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting && entry.intersectionRatio > this.config.touchThreshold) {
+            if (entry.isIntersecting && entry.intersectionRatio > this.defaultConfig.touchThreshold) {
                 this.nextSlide = entry.target as HTMLElement;
             }
         })
-    }, {threshold: [this.config.touchThreshold]});;
+    }, {threshold: [this.defaultConfig.touchThreshold]});;
 
     get slidesArray(): Array<ElementRef<HTMLElement>> {
         if (!this.slides) {
@@ -57,6 +61,11 @@ export class JunivorySlideWrapper implements AfterContentInit, OnDestroy {
     }
 
     constructor(private renderer: Renderer2) {
+        super();
+    }
+
+    ngOnInit() {
+        Object.assign(this.defaultConfig, this.config);
     }
 
     ngOnDestroy() {
@@ -82,7 +91,7 @@ export class JunivorySlideWrapper implements AfterContentInit, OnDestroy {
     }
 
     goTo(index: number) {
-
+        this.goToPage(index);
     }
 
     goNext() {
@@ -130,11 +139,25 @@ export class JunivorySlideWrapper implements AfterContentInit, OnDestroy {
         if (!this.nextSlide) {
             return;
         }
+        const slideIndex = this.slidesArray.findIndex(slide => slide.nativeElement === this.nextSlide);
+        if (this.defaultConfig.order) {
+            this.selected = this.defaultConfig.order.findIndex((index: number) => index === slideIndex);
+        } else {
+            this.selected = slideIndex;
+        }
         this.nextSlide.scrollIntoView({behavior: 'smooth'});
     }
 
     private currentPage() {
-        const index = this.config.order ? this.config.order[this.selected] : this.selected;
+        const index = this.defaultConfig.order ? this.defaultConfig.order[this.selected] : this.selected;
+        this.slidesArray[index].nativeElement.scrollIntoView({behavior: 'smooth'});
+    }
+
+    private goToPage(index: number) {
+        if (!this.slidesArray[index]) {
+            return;
+        }
+        this.selected = index;
         this.slidesArray[index].nativeElement.scrollIntoView({behavior: 'smooth'});
     }
 
@@ -143,7 +166,7 @@ export class JunivorySlideWrapper implements AfterContentInit, OnDestroy {
             return;
         }
         this.selected += 1;
-        const nextIndex = this.config.order ? this.config.order[this.selected] : this.selected;
+        const nextIndex = this.defaultConfig.order ? this.defaultConfig.order[this.selected] : this.selected;
         this.slidesArray[nextIndex].nativeElement.scrollIntoView({behavior: 'smooth'});
     }
 
@@ -152,7 +175,7 @@ export class JunivorySlideWrapper implements AfterContentInit, OnDestroy {
             return;
         }
         this.selected -= 1;
-        const prevIndex = this.config.order ? this.config.order[this.selected] : this.selected;
+        const prevIndex = this.defaultConfig.order ? this.defaultConfig.order[this.selected] : this.selected;
         this.slidesArray[prevIndex].nativeElement.scrollIntoView({behavior: 'smooth'});
     }
 
@@ -160,9 +183,10 @@ export class JunivorySlideWrapper implements AfterContentInit, OnDestroy {
         if (this.debouncing) {
             return true;
         } else {
+            const debounceTime = this.defaultConfig.debounce || 500;
             this.debouncing = setTimeout(() => {
                 this.debouncing = undefined;
-            }, this.config.debounce)
+            }, debounceTime)
             return false;
         }
     }
