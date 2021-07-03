@@ -8,20 +8,24 @@ import { JunivorySlideWrapper, SlideWrapperConfig } from 'junivory-slide';
 })
 export class AppComponent {
     title = 'story';
-    testList = ['pink', 'skyblue', 'yellow', 'white', 'green'];
+    listFront = ['pink', 'skyblue'];
+    listEnd = ['white', 'green'];
+    listHorizontal = ['yellow', 'purple', 'orange']
 
     config: SlideWrapperConfig = {
-        order: [0, 3, 2, 1, 4]
+        touch: true
+    }
+
+    configHorizontal: SlideWrapperConfig = {
+        direction: 'horizontal',
+        order: [0, 1, 2, 1, 0]
     }
 
     @ViewChild('Wrapper') wrapper?: JunivorySlideWrapper;
+    @ViewChild('WrapperHorizontal') wrapperHorizontal?: JunivorySlideWrapper;
 
     constructor() {
 
-    }
-
-    addPage() {
-        this.testList.push('red');
     }
 
     goToPage(index: number) {
@@ -34,6 +38,18 @@ export class AppComponent {
 
     prevPage() {
         this.wrapper?.goPrev();
+    }
+
+    nextPageHorizontal() {
+        if (!this.wrapperHorizontal?.goNext()) {
+            this.wrapper?.goNext();
+        };
+    }
+
+    prevPageHorizontal() {
+        if (!this.wrapperHorizontal?.goPrev()) {
+            this.wrapper?.goPrev();
+        };
     }
 
 }

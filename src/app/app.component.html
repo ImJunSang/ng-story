@@ -1,13 +1,44 @@
 <div junivorySlideWrapper #Wrapper="slideWrapper" [config]="config">
-    <div junivorySlide *ngFor="let item of testList" [style.background-color]="item">
+    <div junivorySlide *ngFor="let item of listFront" [style.background-color]="item">
         <div class="d-flex justify-content-between align-items-center h-100">
             <div class="d-flex flex-column">
                 <button mat-icon-button (click)="prevPage()">
                     <mat-icon>north</mat-icon>
                 </button>
-                <!-- <button  mat-icon-button (click)="goToPage(3)">
-                    <mat-icon>circle</mat-icon>
-                </button> -->
+                <button  mat-icon-button (click)="nextPage()">
+                    <mat-icon>south</mat-icon>
+                </button>
+            </div>
+            <div style="font-size: 60px;">
+                {{item.toUpperCase()}}
+            </div>
+            <div></div>
+        </div>
+    </div>
+    <!-- <div junivorySlideWrapper #WrapperHorizontal="slideWrapper" [config]="configHorizontal">
+        <div junivorySlide *ngFor="let item of listHorizontal" [style.background-color]="item">
+            <div class="d-flex justify-content-between align-items-center h-100">
+                <div class="d-flex flex-column">
+                    <button mat-icon-button (click)="prevPageHorizontal()">
+                        <mat-icon>north</mat-icon>
+                    </button>
+                    <button  mat-icon-button (click)="nextPageHorizontal()">
+                        <mat-icon>south</mat-icon>
+                    </button>
+                </div>
+                <div style="font-size: 60px;">
+                    {{item.toUpperCase()}}
+                </div>
+                <div></div>
+            </div>
+        </div>
+    </div> -->
+    <div junivorySlide *ngFor="let item of listEnd" [style.background-color]="item">
+        <div class="d-flex justify-content-between align-items-center h-100">
+            <div class="d-flex flex-column">
+                <button mat-icon-button (click)="prevPage()">
+                    <mat-icon>north</mat-icon>
+                </button>
                 <button  mat-icon-button (click)="nextPage()">
                     <mat-icon>south</mat-icon>
                 </button>
