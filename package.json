@@ -5,7 +5,9 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build-start": "ng build junivory-slide && ng serve",
+    "build all": "ng build junivory-slide && ng build scroll-video",
+    "build-start-js": "ng build junivory-slide && ng serve",
+    "build-start-sv": "ng build scroll-video && ng serve",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
